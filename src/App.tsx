@@ -25,12 +25,14 @@ function App() {
   };
 
   const handleClick = () => {
-    let res = "";
-    values.forEach((value) => {
-      res = res.concat(value.toString());
-    });
+    let sum = 0;
 
-    setId(res);
+    for (let index = 0; index < values.length; index++) {
+      const res = (index % 2 === 1 ? 1 : 2) * values[index];
+      sum += Math.floor(res / 10 + (res % 10));
+    }
+
+    setId((sum % 10).toString());
   };
 
   for (let index = 0; index < NUM_OF_DIGITS; index++) {
@@ -44,8 +46,9 @@ function App() {
           fontSize: "10vw",
         }}
         className="input"
-        onInput={handleInput} /*maxLength={1}*/
+        onInput={handleInput}
         id={`${index}`}
+        slotProps={{ htmlInput: { maxLength: 1 } }}
       ></TextField>
     );
   }
