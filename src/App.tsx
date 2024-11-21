@@ -20,8 +20,6 @@ function App() {
     validateInput(e);
     const element = e.target as HTMLInputElement;
     values[parseInt(element.id)] = parseInt(element.value);
-    console.log(`index ${parseInt(element.id)} is ${parseInt(element.value)}`);
-    console.log(values);
 
     setIsFull(!values.some((value) => isNaN(value) || value === -1));
   };
@@ -33,7 +31,6 @@ function App() {
     });
 
     setId(res);
-    console.log(values);
   };
 
   for (let index = 0; index < NUM_OF_DIGITS; index++) {
