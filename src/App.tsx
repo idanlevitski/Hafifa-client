@@ -1,12 +1,14 @@
-import { FormEvent, ReactElement, ReactNode, useState } from "react";
+import { FormEvent, useState } from "react";
 import "./App.css";
 import { Box, Button, TextField, Typography } from "@mui/material";
 
 function App() {
-  const inputs: JSX.Element[] = [];
   const NUM_OF_DIGITS: number = 8;
-  const values: number[] = new Array(8).fill(-1);
+
+  const inputs: JSX.Element[] = [];
+  const [values, setValues] = useState<number[]>(new Array(8).fill(-1));
   const [isFull, setIsFull] = useState(false);
+  const [id, setId] = useState("");
 
   const validateInput = (e: FormEvent<HTMLInputElement>) => {
     if (!parseInt((e.target as HTMLInputElement).value)) {
@@ -17,8 +19,21 @@ function App() {
   const handleInput = (e: FormEvent<HTMLInputElement>) => {
     validateInput(e);
     const element = e.target as HTMLInputElement;
-    values[parseInt(element.name)] = parseInt(element.value);
-    setIsFull(values.every((value) => value !== -1));
+    values[parseInt(element.id)] = parseInt(element.value);
+    console.log(`index ${parseInt(element.id)} is ${parseInt(element.value)}`);
+    console.log(values);
+
+    setIsFull(!values.some((value) => isNaN(value) || value === -1));
+  };
+
+  const handleClick = () => {
+    let res = "";
+    values.forEach((value) => {
+      res = res.concat(value.toString());
+    });
+
+    setId(res);
+    console.log(values);
   };
 
   for (let index = 0; index < NUM_OF_DIGITS; index++) {
@@ -33,7 +48,7 @@ function App() {
         }}
         className="input"
         onInput={handleInput} /*maxLength={1}*/
-        name={`${index}`}
+        id={`${index}`}
       ></TextField>
     );
   }
@@ -50,9 +65,15 @@ function App() {
     >
       <Typography sx={{ fontSize: "70px" }}>Enter 8 digits</Typography>
       <Box>{inputs}</Box>
-      <Button variant="outlined" sx={{ fontSize: "1.5vw" }} disabled={!isFull}>
+      <Button
+        variant="outlined"
+        sx={{ fontSize: "1.5vw" }}
+        disabled={!isFull}
+        onClick={handleClick}
+      >
         Send
       </Button>
+      <Typography>{id}</Typography>
     </Box>
   );
 }
