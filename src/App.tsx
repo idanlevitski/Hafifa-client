@@ -11,6 +11,7 @@ function App() {
   const [id, setId] = useState("");
 
   const validateInput = (e: FormEvent<HTMLInputElement>) => {
+    console.log((e.target as HTMLInputElement).value);
     if (!parseInt((e.target as HTMLInputElement).value)) {
       (e.target as HTMLInputElement).value = "";
     }
@@ -25,27 +26,17 @@ function App() {
   };
 
   const handleClick = () => {
-    let sum = 0;
-
-    for (let index = 0; index < values.length; index++) {
-      const res = (index % 2 === 1 ? 1 : 2) * values[index];
-      sum += Math.floor(res / 10 + (res % 10));
-    }
-
-    setId((sum % 10).toString());
+    setId("TODO");
   };
 
   for (let index = 0; index < NUM_OF_DIGITS; index++) {
     inputs.push(
       <TextField
         sx={{
-          height: "5vh",
           width: "5vh",
           mr: "1vw",
-          textAlign: "center",
-          fontSize: "10vw",
+          borderColor: "#0066ff",
         }}
-        className="input"
         onInput={handleInput}
         id={`${index}`}
         slotProps={{ htmlInput: { maxLength: 1 } }}
@@ -63,11 +54,25 @@ function App() {
         gap: "3vh",
       }}
     >
-      <Typography sx={{ fontSize: "70px" }}>Enter 8 digits</Typography>
+      <Typography
+        sx={{
+          fontSize: "70px",
+          cursor: "default",
+          fontFamily: "cursive",
+          color: "#0066ff",
+        }}
+      >
+        Enter 8 digits
+      </Typography>
       <Box>{inputs}</Box>
       <Button
         variant="outlined"
-        sx={{ fontSize: "1.5vw" }}
+        sx={{
+          fontSize: "1.5vw",
+          borderRadius: "20px",
+          fontWeight: "bold",
+          fontFamily: "cursive",
+        }}
         disabled={!isFull}
         onClick={handleClick}
       >
