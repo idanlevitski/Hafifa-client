@@ -1,43 +1,38 @@
-import { createRef, KeyboardEvent, useRef, useState } from "react";
-import "./App.css";
+import { createRef, KeyboardEvent, RefObject, useRef, useState } from "react";
 import { Box, Button, TextField, Typography } from "@mui/material";
+import { getLastDigit } from "./axios/useAxios";
 
 function App() {
   const NUM_OF_DIGITS: number = 8;
 
   const inputs: JSX.Element[] = [];
-  const [values, setValues] = useState<string[]>(new Array(8).fill(""));
-  const inputRefs = useRef<React.RefObject<HTMLInputElement>[]>(
+  const [values, setValues] = useState<string[]>(
+    new Array(NUM_OF_DIGITS).fill("")
+  );
+  const inputRefs = useRef<RefObject<HTMLInputElement>[]>(
     [...Array(NUM_OF_DIGITS)].map(() => createRef())
   );
+  const [lastDigit, setLastDigit] = useState<number | undefined>(undefined);
 
   const handleInput = (e: KeyboardEvent<HTMLInputElement>) => {
-    let diff: number = 0;
-    const element: HTMLInputElement = e.target as HTMLInputElement;
+    let shift: number = 0;
+    const elementIndex = parseInt((e.target as HTMLInputElement).id);
     const newValues: string[] = [...values];
     if (/^\d$/.test(e.key)) {
-      diff = 1;
+      shift = 1;
 
-      newValues[parseInt(element.id)] = e.key;
+      newValues[elementIndex] = e.key;
       setValues(newValues);
     } else if (e.key === "Backspace") {
-      diff = -1;
+      shift = -1;
 
-      newValues[parseInt(element.id)] = "";
+      newValues[elementIndex] = "";
       setValues(newValues);
     } else {
       e.preventDefault();
     }
 
-    const currentIndex: number = inputRefs.current.findIndex(
-      (inputRef) => inputRef.current === element
-    );
-
-    inputRefs.current[currentIndex + diff]?.current?.focus();
-  };
-
-  const handleClick = () => {
-    console.log(`TODO - ${values}`);
+    inputRefs.current[elementIndex + shift]?.current?.focus();
   };
 
   for (let index = 0; index < NUM_OF_DIGITS; index++) {
@@ -58,6 +53,10 @@ function App() {
     );
   }
 
+  const calcLastDigit = async (): Promise<void> => {
+    setLastDigit(await getLastDigit(values.join("")));
+  };
+
   return (
     <Box
       sx={{
@@ -76,7 +75,7 @@ function App() {
           color: "#0066ff",
         }}
       >
-        Enter 8 digits
+        {`Enter ${NUM_OF_DIGITS} digits`}
       </Typography>
       <Box>{inputs}</Box>
       <Button
@@ -88,10 +87,11 @@ function App() {
           fontFamily: "cursive",
         }}
         disabled={values.some((value) => value === "")}
-        onClick={handleClick}
+        onClick={calcLastDigit}
       >
         Send
       </Button>
+      {lastDigit && <Typography>{lastDigit}</Typography>}
     </Box>
   );
 }
