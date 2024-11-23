@@ -1,4 +1,4 @@
-import { FormEvent, useState } from "react";
+import { createRef, KeyboardEvent, useRef, useState } from "react";
 import "./App.css";
 import { Box, Button, TextField, Typography } from "@mui/material";
 
@@ -6,27 +6,38 @@ function App() {
   const NUM_OF_DIGITS: number = 8;
 
   const inputs: JSX.Element[] = [];
-  const [values, setValues] = useState<number[]>(new Array(8).fill(-1));
-  const [isFull, setIsFull] = useState(false);
-  const [id, setId] = useState("");
+  const [values, setValues] = useState<string[]>(new Array(8).fill(""));
+  const inputRefs = useRef<React.RefObject<HTMLInputElement>[]>(
+    [...Array(NUM_OF_DIGITS)].map(() => createRef())
+  );
 
-  const validateInput = (e: FormEvent<HTMLInputElement>) => {
-    console.log((e.target as HTMLInputElement).value);
-    if (!parseInt((e.target as HTMLInputElement).value)) {
-      (e.target as HTMLInputElement).value = "";
+  const handleInput = (e: KeyboardEvent<HTMLInputElement>) => {
+    let diff: number = 0;
+    const element: HTMLInputElement = e.target as HTMLInputElement;
+    const newValues: string[] = [...values];
+    if (/^\d$/.test(e.key)) {
+      diff = 1;
+
+      newValues[parseInt(element.id)] = e.key;
+      setValues(newValues);
+    } else if (e.key === "Backspace") {
+      diff = -1;
+
+      newValues[parseInt(element.id)] = "";
+      setValues(newValues);
+    } else {
+      e.preventDefault();
     }
-  };
 
-  const handleInput = (e: FormEvent<HTMLInputElement>) => {
-    validateInput(e);
-    const element = e.target as HTMLInputElement;
-    values[parseInt(element.id)] = parseInt(element.value);
+    const currentIndex: number = inputRefs.current.findIndex(
+      (inputRef) => inputRef.current === element
+    );
 
-    setIsFull(!values.some((value) => isNaN(value) || value === -1));
+    inputRefs.current[currentIndex + diff]?.current?.focus();
   };
 
   const handleClick = () => {
-    setId("TODO");
+    console.log(`TODO - ${values}`);
   };
 
   for (let index = 0; index < NUM_OF_DIGITS; index++) {
@@ -37,9 +48,12 @@ function App() {
           mr: "1vw",
           borderColor: "#0066ff",
         }}
-        onInput={handleInput}
+        onKeyDown={handleInput}
         id={`${index}`}
+        key={index}
         slotProps={{ htmlInput: { maxLength: 1 } }}
+        inputRef={inputRefs.current[index]}
+        value={values[index]}
       ></TextField>
     );
   }
@@ -73,12 +87,11 @@ function App() {
           fontWeight: "bold",
           fontFamily: "cursive",
         }}
-        disabled={!isFull}
+        disabled={values.some((value) => value === "")}
         onClick={handleClick}
       >
         Send
       </Button>
-      <Typography>{id}</Typography>
     </Box>
   );
 }
