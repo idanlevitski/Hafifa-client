@@ -6,7 +6,7 @@ const api = axios.create({
 
 export const getLastDigit = async (id: string): Promise<number | undefined> => {
   try {
-    const lastDigit: number = (await api.get(`/${id}`)).data;
+    const lastDigit: number = (await api.get(`/calc/${id}`)).data;
     return lastDigit;
   } catch (e) {
     console.log(e);
