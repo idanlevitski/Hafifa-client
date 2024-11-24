@@ -26,7 +26,7 @@ export const handleInput = (
 
 export const handleClear = (
   setValues: Dispatch<SetStateAction<string[]>>,
-  setLastDigit: Dispatch<SetStateAction<number | undefined>>
+  setLastDigit: Dispatch<SetStateAction<string | undefined>>
 ) => {
   setValues(new Array(NUM_OF_DIGITS).fill(""));
   setLastDigit(undefined);

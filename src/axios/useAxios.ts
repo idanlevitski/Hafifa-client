@@ -4,10 +4,24 @@ const api = axios.create({
   baseURL: "http://localhost:3000",
 });
 
-export const getLastDigit = async (id: string): Promise<number | undefined> => {
+export const getLastDigit = async (id: string): Promise<string | undefined> => {
   try {
-    const lastDigit: number = (await api.get(`/calc/${id}`)).data;
-    return lastDigit;
+    return (await api.get(`/calc/${id}`)).data;
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+export const saveData = async (id: string, lastDigit: string) => {
+  try {
+    await api.post(
+      "/save",
+      {
+        id,
+        lastDigit,
+      },
+      { headers: { "Content-Type": "application/json" } }
+    );
   } catch (e) {
     console.log(e);
   }

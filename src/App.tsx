@@ -1,6 +1,6 @@
 import { ClipboardEvent, KeyboardEvent, useState } from "react";
 import { Box, Button, TextField, Typography } from "@mui/material";
-import { getLastDigit } from "./axios/useAxios";
+import { getLastDigit, saveData } from "./axios/useAxios";
 import { handleClear, handleInput, handlePaste } from "./utils/functions";
 
 function App() {
@@ -9,7 +9,17 @@ function App() {
   const [values, setValues] = useState<string[]>(
     new Array(NUM_OF_DIGITS).fill("")
   );
-  const [lastDigit, setLastDigit] = useState<number | undefined>(undefined);
+  const [lastDigit, setLastDigit] = useState<string | undefined>(undefined);
+
+  const handleClick = async () => {
+    const lastDigit: string | undefined = await getLastDigit(values.join(""));
+
+    if (lastDigit) {
+      setLastDigit(lastDigit);
+
+      await saveData(values.join(""), lastDigit.toString());
+    }
+  };
 
   return (
     <Box
@@ -63,9 +73,7 @@ function App() {
             fontFamily: "cursive",
           }}
           disabled={values.some((value) => value === "")}
-          onClick={async () =>
-            setLastDigit(await getLastDigit(values.join("")))
-          }
+          onClick={handleClick}
         >
           Calculate
         </Button>
