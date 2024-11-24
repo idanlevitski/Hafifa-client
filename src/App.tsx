@@ -1,37 +1,14 @@
-import { KeyboardEvent, useState } from "react";
+import { ClipboardEvent, KeyboardEvent, useState } from "react";
 import { Box, Button, TextField, Typography } from "@mui/material";
 import { getLastDigit } from "./axios/useAxios";
+import { handleClear, handleInput, handlePaste } from "./utils/functions";
+import { NUM_OF_DIGITS } from "./utils/consts";
 
 function App() {
-  const NUM_OF_DIGITS: number = 8;
-
   const [values, setValues] = useState<string[]>(
     new Array(NUM_OF_DIGITS).fill("")
   );
   const [lastDigit, setLastDigit] = useState<number | undefined>(undefined);
-
-  const handleInput = (e: KeyboardEvent<HTMLInputElement>) => {
-    const elementIndex = parseInt((e.target as HTMLInputElement).id);
-
-    const newValues: string[] = [...values];
-
-    if (/^\d$/.test(e.key)) {
-      newValues[elementIndex] = e.key;
-      setValues(newValues);
-
-      document.getElementById(`${elementIndex + 1}`)?.focus();
-    } else if (e.key === "Backspace") {
-      newValues[elementIndex] = "";
-      setValues(newValues);
-
-      document.getElementById(`${elementIndex - 1}`)?.focus();
-    }
-  };
-
-  const handleClear = () => {
-    setValues(new Array(NUM_OF_DIGITS).fill(""));
-    setLastDigit(undefined);
-  };
 
   return (
     <Box
@@ -62,12 +39,15 @@ function App() {
                 mr: "1vw",
                 borderColor: "#0066ff",
               }}
-              onKeyDown={handleInput}
+              onKeyDown={(e: KeyboardEvent<HTMLInputElement>) =>
+                handleInput(e, values, setValues)
+              }
               id={`${index}`}
               key={index}
               slotProps={{ htmlInput: { maxLength: 1 } }}
               value={values[index]}
               className="inputBox"
+              onPaste={(e: ClipboardEvent) => handlePaste(e, values, setValues)}
             ></TextField>
           );
         })}
@@ -99,7 +79,7 @@ function App() {
             borderColor: "red",
           }}
           disabled={values.every((value) => value === "")}
-          onClick={handleClear}
+          onClick={() => handleClear(setValues, setLastDigit)}
         >
           Clear
         </Button>
