@@ -1,4 +1,4 @@
-import { createRef, KeyboardEvent, RefObject, useRef, useState } from "react";
+import { KeyboardEvent, useState } from "react";
 import { Box, Button, TextField, Typography } from "@mui/material";
 import { getLastDigit } from "./axios/useAxios";
 
@@ -9,15 +9,14 @@ function App() {
   const [values, setValues] = useState<string[]>(
     new Array(NUM_OF_DIGITS).fill("")
   );
-  const inputRefs = useRef<RefObject<HTMLInputElement>[]>(
-    [...Array(NUM_OF_DIGITS)].map(() => createRef())
-  );
   const [lastDigit, setLastDigit] = useState<number | undefined>(undefined);
 
   const handleInput = (e: KeyboardEvent<HTMLInputElement>) => {
     let shift: number = 0;
     const elementIndex = parseInt((e.target as HTMLInputElement).id);
+
     const newValues: string[] = [...values];
+
     if (/^\d$/.test(e.key)) {
       shift = 1;
 
@@ -32,7 +31,7 @@ function App() {
       e.preventDefault();
     }
 
-    inputRefs.current[elementIndex + shift]?.current?.focus();
+    document.getElementById(`${elementIndex + shift}`)?.focus();
   };
 
   for (let index = 0; index < NUM_OF_DIGITS; index++) {
@@ -47,15 +46,11 @@ function App() {
         id={`${index}`}
         key={index}
         slotProps={{ htmlInput: { maxLength: 1 } }}
-        inputRef={inputRefs.current[index]}
         value={values[index]}
+        className="inputBox"
       ></TextField>
     );
   }
-
-  const calcLastDigit = async (): Promise<void> => {
-    setLastDigit(await getLastDigit(values.join("")));
-  };
 
   return (
     <Box
@@ -78,19 +73,39 @@ function App() {
         {`Enter ${NUM_OF_DIGITS} digits`}
       </Typography>
       <Box>{inputs}</Box>
-      <Button
-        variant="outlined"
-        sx={{
-          fontSize: "1.5vw",
-          borderRadius: "20px",
-          fontWeight: "bold",
-          fontFamily: "cursive",
-        }}
-        disabled={values.some((value) => value === "")}
-        onClick={calcLastDigit}
-      >
-        Send
-      </Button>
+      <Box sx={{ display: "flex", flexDirection: "row", gap: "1vw" }}>
+        <Button
+          variant="outlined"
+          sx={{
+            fontSize: "1.5vw",
+            borderRadius: "20px",
+            fontWeight: "bold",
+            fontFamily: "cursive",
+          }}
+          disabled={values.some((value) => value === "")}
+          onClick={async () =>
+            setLastDigit(await getLastDigit(values.join("")))
+          }
+        >
+          Calculate
+        </Button>
+        <Button
+          variant="outlined"
+          sx={{
+            fontSize: "1.5vw",
+            borderRadius: "20px",
+            fontWeight: "bold",
+            fontFamily: "cursive",
+            color: "red",
+            borderColor: "red",
+          }}
+          disabled={values.every((value) => value === "")}
+          onClick={() => setValues(new Array(NUM_OF_DIGITS).fill(""))}
+        >
+          Clear
+        </Button>
+      </Box>
+
       {lastDigit && <Typography>{lastDigit}</Typography>}
     </Box>
   );
