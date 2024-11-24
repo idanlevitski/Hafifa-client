@@ -1,5 +1,6 @@
 import { ClipboardEvent, Dispatch, KeyboardEvent, SetStateAction } from "react";
-import { NUM_OF_DIGITS } from "./consts";
+
+const NUM_OF_DIGITS = 8;
 
 export const handleInput = (
   e: KeyboardEvent<HTMLInputElement>,

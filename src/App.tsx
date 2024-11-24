@@ -2,9 +2,10 @@ import { ClipboardEvent, KeyboardEvent, useState } from "react";
 import { Box, Button, TextField, Typography } from "@mui/material";
 import { getLastDigit } from "./axios/useAxios";
 import { handleClear, handleInput, handlePaste } from "./utils/functions";
-import { NUM_OF_DIGITS } from "./utils/consts";
 
 function App() {
+  const NUM_OF_DIGITS = 8;
+
   const [values, setValues] = useState<string[]>(
     new Array(NUM_OF_DIGITS).fill("")
   );
