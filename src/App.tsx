@@ -52,6 +52,11 @@ function App() {
     );
   }
 
+  const handleClear = () => {
+    setValues(new Array(NUM_OF_DIGITS).fill(""));
+    setLastDigit(undefined);
+  };
+
   return (
     <Box
       sx={{
@@ -100,7 +105,7 @@ function App() {
             borderColor: "red",
           }}
           disabled={values.every((value) => value === "")}
-          onClick={() => setValues(new Array(NUM_OF_DIGITS).fill(""))}
+          onClick={handleClear}
         >
           Clear
         </Button>
