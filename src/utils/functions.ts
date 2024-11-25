@@ -1,6 +1,5 @@
 import { ClipboardEvent, Dispatch, KeyboardEvent, SetStateAction } from "react";
-
-const NUM_OF_DIGITS = 8;
+import { NUM_OF_DIGITS } from "./consts";
 
 export const handleInput = (
   e: KeyboardEvent<HTMLInputElement>,
@@ -16,7 +15,9 @@ export const handleInput = (
     setValues(newValues);
 
     document.getElementById(`${elementIndex + 1}`)?.focus();
-  } else if (e.key === "Backspace") {
+  }
+
+  if (e.key === "Backspace") {
     newValues[elementIndex] = "";
     setValues(newValues);
 
@@ -39,7 +40,10 @@ export const handlePaste = (
 ) => {
   if (e.clipboardData) {
     const newValues: string[] = [...values];
-    const pastedData = e.clipboardData.getData("text").split("");
+    const pastedData = e.clipboardData
+      .getData("text")
+      .split("")
+      .filter((digit) => /^\d$/.test(digit));
 
     pastedData.forEach((digit: string, index: number) => {
       newValues[index] = digit;
